@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/gleb-korostelev/gophermart.git/internal/config"
+	"github.com/gleb-korostelev/gophermart.git/internal/apperror"
 	"github.com/gleb-korostelev/gophermart.git/internal/models"
 	"github.com/gleb-korostelev/gophermart.git/internal/service/utils"
 	"github.com/gleb-korostelev/gophermart.git/tools/logger"
@@ -31,7 +31,7 @@ func (svc *APIService) Register(w http.ResponseWriter, r *http.Request) {
 	}
 	err = svc.store.Register(context.Background(), newUser)
 	if err != nil {
-		if err == config.ErrLoginExists {
+		if err == apperror.ErrLoginExists {
 			http.Error(w, "Login already taken", http.StatusConflict)
 			return
 		}

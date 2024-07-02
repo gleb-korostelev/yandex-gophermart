@@ -3,7 +3,7 @@ package dbimpl
 import (
 	"context"
 
-	"github.com/gleb-korostelev/gophermart.git/internal/config"
+	"github.com/gleb-korostelev/gophermart.git/internal/apperror"
 	"github.com/gleb-korostelev/gophermart.git/internal/db"
 	"github.com/gleb-korostelev/gophermart.git/internal/models"
 	"github.com/jackc/pgx/v5"
@@ -34,7 +34,7 @@ func SaveUser(db db.DB, ctx context.Context, login, password string) error {
 		return err
 	}
 	if cmdTag.RowsAffected() == 0 {
-		return config.ErrLoginExists
+		return apperror.ErrLoginExists
 	}
 	return nil
 }
@@ -46,8 +46,7 @@ func SaveOrders(db db.DB, ctx context.Context, login, orderID string) (string, b
 	err := db.QueryRow(ctx, sqlScan, orderID).Scan(&orderLogin)
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			_, err = db.Exec(ctx, sqlExec, orderID, login, "NEW")
-			if err != nil {
+			if _, err = db.Exec(ctx, sqlExec, orderID, login, "NEW"); err != nil {
 				return "", false, err
 			}
 			return "", false, nil
@@ -70,7 +69,7 @@ func Withdraw(db db.DB, ctx context.Context, login string, req models.WithdrawRe
 	}
 
 	if currentBalance < req.Sum {
-		return config.ErrNoFunds
+		return apperror.ErrNoFunds
 	}
 
 	_, err = tx.Exec(ctx, "UPDATE balances SET current = current - $1, withdrawn=withdrawn + $1 WHERE login = $2", req.Sum, login)

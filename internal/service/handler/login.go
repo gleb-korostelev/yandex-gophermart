@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/gleb-korostelev/gophermart.git/internal/config"
+	"github.com/gleb-korostelev/gophermart.git/internal/apperror"
 	"github.com/gleb-korostelev/gophermart.git/internal/models"
 	"github.com/gleb-korostelev/gophermart.git/internal/service/utils"
 	"github.com/gleb-korostelev/gophermart.git/tools/logger"
@@ -31,9 +31,9 @@ func (svc *APIService) Login(w http.ResponseWriter, r *http.Request) {
 	}
 	err = svc.store.Auth(context.Background(), newUser)
 	if err != nil {
-		if err == config.ErrGone {
+		if err == apperror.ErrGone {
 			logger.Infof("This user was deleted: %v", err)
-			http.Error(w, config.ErrGone.Error(), http.StatusGone)
+			http.Error(w, apperror.ErrGone.Error(), http.StatusGone)
 			return
 		}
 		logger.Infof("Internal server error: %v", err)

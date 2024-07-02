@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/gleb-korostelev/gophermart.git/internal/apperror"
 	"github.com/gleb-korostelev/gophermart.git/internal/config"
 	"github.com/gleb-korostelev/gophermart.git/internal/models"
 	"github.com/gleb-korostelev/gophermart.git/internal/service/utils"
@@ -34,7 +35,7 @@ func (svc *APIService) Withdraw(w http.ResponseWriter, r *http.Request) {
 
 	err = svc.store.ProcessWithdrawal(context.Background(), login, req)
 	if err != nil {
-		if err == config.ErrNoFunds {
+		if err == apperror.ErrNoFunds {
 			logger.Infof("Insufficient funds")
 			http.Error(w, "Insufficient funds", http.StatusPaymentRequired)
 			return

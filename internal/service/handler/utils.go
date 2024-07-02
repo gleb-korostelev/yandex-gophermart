@@ -14,7 +14,7 @@ import (
 )
 
 func (svc *APIService) CheckOrderStatus(login string, orders []models.OrdersData) []models.OrdersData {
-	baseURL := config.AccuralSystemAddress + "/api/orders/%s"
+	baseURL := config.ServerConfig.AccuralSystemAddress + "/api/orders/%s"
 	var ordersRes []models.OrdersData
 	for _, order := range orders {
 		if order.Status == "PROCESSED" {

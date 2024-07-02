@@ -1,10 +1,11 @@
 package config
 
 import (
-	"errors"
 	"flag"
 	"os"
 	"time"
+
+	"github.com/gleb-korostelev/gophermart.git/internal/apperror"
 )
 
 const (
@@ -19,56 +20,46 @@ type contextKey string
 
 const UserContextKey = contextKey("login")
 
-var (
+type ServerConfigData struct {
 	ServerAddr           string
 	DBDSN                string
 	AccuralSystemAddress string
-)
+}
 
-var (
-	ErrNoServerAddress        = errors.New("server address is empty")
-	ErrNoDatabaseDestination  = errors.New("database destination is empty")
-	ErrNoAccuralSystemAddress = errors.New("no address for accural system")
-	ErrTokenInvalid           = errors.New("token is not valid")
-	ErrLoginExists            = errors.New("user is already exists")
-	ErrWrongPassword          = errors.New("wrong password")
-	ErrGone                   = errors.New("user was deleted")
-	ErrNoFunds                = errors.New("insufficient funds")
-	ErrNotFound               = errors.New("order not found")
-)
+var ServerConfig ServerConfigData
 
 func ConfigInit() error {
-	flag.StringVar(&ServerAddr, "a", DefaultServerAddress, "address to run HTTP server on")
-	flag.StringVar(&DBDSN, "d", "", "base file path to save URLs")
-	flag.StringVar(&AccuralSystemAddress, "r", "", "address for accural system")
+	flag.StringVar(&ServerConfig.ServerAddr, "a", DefaultServerAddress, "address to run HTTP server on")
+	flag.StringVar(&ServerConfig.DBDSN, "d", "", "base file path to save URLs")
+	flag.StringVar(&ServerConfig.AccuralSystemAddress, "r", "", "address for accural system")
 
 	flag.Parse()
 
 	if serverAddr := os.Getenv("RUN_ADDRESS"); serverAddr != "" {
-		ServerAddr = serverAddr
+		ServerConfig.ServerAddr = serverAddr
 	}
 	if dbdsn := os.Getenv("DATABASE_URI"); dbdsn != "" {
-		DBDSN = dbdsn
+		ServerConfig.DBDSN = dbdsn
 	}
 	if accural := os.Getenv("ACCRUAL_SYSTEM_ADDRESS"); accural != "" {
-		AccuralSystemAddress = accural
+		ServerConfig.AccuralSystemAddress = accural
 	}
 
-	// DBDSN = "postgres://postgres:7513@localhost:5432/postgres"
-	// ServerAddr = DefaultServerAddress
-	// AccuralSystemAddress = DefaultAccuralSystemAddress
+	// ServerConfig.DBDSN = "postgres://postgres:7513@localhost:5432/postgres"
+	// ServerConfig.ServerAddr = DefaultServerAddress
+	// ServerConfig.AccuralSystemAddress = DefaultAccuralSystemAddress
 
 	return checkConfig()
 }
 
 func checkConfig() error {
 	switch {
-	case ServerAddr == "":
-		return ErrNoServerAddress
-	case DBDSN == "":
-		return ErrNoDatabaseDestination
-	case AccuralSystemAddress == "":
-		return ErrNoAccuralSystemAddress
+	case ServerConfig.ServerAddr == "":
+		return apperror.ErrNoServerAddress
+	case ServerConfig.DBDSN == "":
+		return apperror.ErrNoDatabaseDestination
+	case ServerConfig.AccuralSystemAddress == "":
+		return apperror.ErrNoAccuralSystemAddress
 	default:
 		return nil
 	}

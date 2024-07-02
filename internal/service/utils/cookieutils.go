@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gleb-korostelev/gophermart.git/internal/apperror"
 	"github.com/gleb-korostelev/gophermart.git/internal/config"
 	"github.com/gleb-korostelev/gophermart.git/internal/models"
 	"github.com/gleb-korostelev/gophermart.git/tools/logger"
@@ -38,7 +39,7 @@ func VerifyJWT(tokenString string, jwtKeySecret string) (*models.Claims, error) 
 		return nil, err
 	}
 	if !token.Valid {
-		return nil, config.ErrTokenInvalid
+		return nil, apperror.ErrTokenInvalid
 	}
 
 	return claims, nil

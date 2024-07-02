@@ -2,15 +2,11 @@ package middleware
 
 import (
 	"compress/gzip"
-	"context"
 	"io"
 	"net/http"
 	"strings"
 	"time"
 
-	"github.com/gleb-korostelev/gophermart.git/internal/config"
-	"github.com/gleb-korostelev/gophermart.git/internal/service/utils"
-	"github.com/gleb-korostelev/gophermart.git/tools/logger"
 	"go.uber.org/zap"
 )
 
@@ -111,15 +107,15 @@ func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 	return w.Writer.Write(b)
 }
 
-func EnsureUserCookie(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		login, err := utils.GetLoginFromCookie(r)
-		if err != nil {
-			logger.Infof("Failed to authorize due to error: %v", err)
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
-		ctx := context.WithValue(r.Context(), config.UserContextKey, login)
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
-}
+// func EnsureUserCookie(next http.Handler) http.Handler {
+// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// 		login, err := utils.GetLoginFromCookie(r)
+// 		if err != nil {
+// 			logger.Infof("Failed to authorize due to error: %v", err)
+// 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+// 			return
+// 		}
+// 		ctx := context.WithValue(r.Context(), config.UserContextKey, login)
+// 		next.ServeHTTP(w, r.WithContext(ctx))
+// 	})
+// }

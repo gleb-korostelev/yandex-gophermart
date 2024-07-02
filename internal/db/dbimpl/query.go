@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/gleb-korostelev/gophermart.git/internal/config"
+	"github.com/gleb-korostelev/gophermart.git/internal/apperror"
 	"github.com/gleb-korostelev/gophermart.git/internal/db"
 	"github.com/gleb-korostelev/gophermart.git/internal/models"
 )
@@ -18,7 +18,7 @@ func GetUserCred(db db.DB, ctx context.Context, login string) (string, error) {
 		return "", err
 	}
 	if isDeleted {
-		return "", config.ErrGone
+		return "", apperror.ErrGone
 	}
 	return password, nil
 }

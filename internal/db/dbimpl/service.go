@@ -16,7 +16,7 @@ type Database struct {
 }
 
 func InitDB() (db.DB, error) {
-	сonnection, err := pgxpool.New(context.Background(), config.DBDSN)
+	сonnection, err := pgxpool.New(context.Background(), config.ServerConfig.DBDSN)
 	if err != nil {
 		logger.Infof("Unable to connect to database: %v\n", err)
 		return nil, err

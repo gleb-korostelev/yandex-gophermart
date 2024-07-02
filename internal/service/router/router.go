@@ -12,16 +12,18 @@ func RouterInit(svc service.APIServiceI, logger *zap.Logger) *chi.Mux {
 	router.Use(middleware.GzipCompressMiddleware)
 	router.Use(middleware.GzipDecompressMiddleware)
 	router.Use(middleware.LoggingMiddleware(logger))
-	router.Post("/api/user/register", svc.Register)
-	router.Post("/api/user/login", svc.Login)
-	router.Route("/", func(r chi.Router) {
-		r.Use(middleware.EnsureUserCookie)
-		r.Post("/api/user/orders", svc.Orders)
-		r.Post("/api/user/balance/withdraw", svc.Withdraw)
-		r.Get("/api/user/orders", svc.GetOrders)
-		r.Get("/api/user/balance", svc.GetBalance)
-		r.Get("/api/user/withdrawals", svc.GetWithdrawals)
-	})
+	router.Route("/api/user", func(r chi.Router) {
+		r.Post("/register", svc.Register)
+		r.Post("/login", svc.Login)
 
+		r.Route("/", func(r chi.Router) {
+			r.Use(middleware.EnsureUserCookie)
+			r.Post("/orders", svc.Orders)
+			r.Post("/balance/withdraw", svc.Withdraw)
+			r.Get("/orders", svc.GetOrders)
+			r.Get("/balance", svc.GetBalance)
+			r.Get("/withdrawals", svc.GetWithdrawals)
+		})
+	})
 	return router
 }

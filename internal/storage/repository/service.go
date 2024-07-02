@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/gleb-korostelev/gophermart.git/internal/config"
+	"github.com/gleb-korostelev/gophermart.git/internal/apperror"
 	"github.com/gleb-korostelev/gophermart.git/internal/db"
 	"github.com/gleb-korostelev/gophermart.git/internal/db/dbimpl"
 	"github.com/gleb-korostelev/gophermart.git/internal/models"
@@ -65,8 +65,8 @@ func (s *service) Auth(ctx context.Context, userCred models.User) error {
 
 	err = bcrypt.CompareHashAndPassword([]byte(EncryptedPassword), []byte(userCred.Password))
 	if err != nil {
-		logger.Infof("Failed to authorize: %v", config.ErrWrongPassword)
-		return config.ErrWrongPassword
+		logger.Infof("Failed to authorize: %v", apperror.ErrWrongPassword)
+		return apperror.ErrWrongPassword
 	}
 	return nil
 }
